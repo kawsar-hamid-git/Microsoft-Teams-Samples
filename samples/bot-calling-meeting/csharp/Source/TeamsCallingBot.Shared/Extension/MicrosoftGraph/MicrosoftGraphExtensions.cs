@@ -1,13 +1,14 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 using System;
 using Azure.Identity;
 using TeamsCallingBot.Application.DTOs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
+using TeamsCallingBot.Application.Interfaces.MicrosoftGraph;
+using TeamsCallingBot.Infrastructure.MicrosoftGraph;
+using TeamsCallingBot.Shared.Constants.MicrosoftGraph;
+using TeamsCallingBot.Shared.Interfaces.MicrosoftGraph;
 
-namespace TeamsCallingBot.Services.MicrosoftGraph
+namespace TeamsCallingBot.Shared.Extension.MicrosoftGraph
 {
     public static class MicrosoftGraphExtensions
     {

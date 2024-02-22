@@ -1,5 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Concurrent;
@@ -9,8 +7,9 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TeamsCallingBot.Application.Interfaces.BotFramework;
 
-namespace TeamsCallingBot.Services.BotFramework
+namespace TeamsCallingBot.Infrastructure.BotFramework
 {
     /// <inheritdoc/>
     public class ConnectorClientFactory : IConnectorClientFactory

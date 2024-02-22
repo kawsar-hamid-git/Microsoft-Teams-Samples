@@ -1,5 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -10,10 +8,6 @@ using TeamsCallingBot.Authentication;
 using TeamsCallingBot.Cache;
 using TeamsCallingBot.Domain.Models;
 using TeamsCallingBot.Application.DTOs;
-using TeamsCallingBot.Services.BotFramework;
-using TeamsCallingBot.Services.CognitiveServices;
-using TeamsCallingBot.Services.MicrosoftGraph;
-using TeamsCallingBot.Services.TeamsRecordingService;
 using TeamsCallingBot.Utility;
 using TeamsCallingBot.Application.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -26,6 +20,11 @@ using Microsoft.Graph.Communications.Client.Authentication;
 using Microsoft.Graph.Communications.Common.Telemetry;
 using Microsoft.Graph.Communications.Core.Notifications;
 using Microsoft.Graph.Communications.Core.Serialization;
+using TeamsCallingBot.Application.Interfaces.BotFramework;
+using TeamsCallingBot.Application.Interfaces.CognitiveServices;
+using TeamsCallingBot.Application.Interfaces.MicrosoftGraph;
+using TeamsCallingBot.Shared.Constants.MicrosoftGraph;
+using TeamsCallingBot.Application.Interfaces.TeamsRecordingService;
 
 namespace TeamsCallingBot.Bots
 {

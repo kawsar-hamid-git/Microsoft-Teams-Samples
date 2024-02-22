@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Connector;
 
-namespace TeamsCallingBot.Services.BotFramework
+namespace TeamsCallingBot.Application.Interfaces.BotFramework
 {
     /// <summary>
     /// Factory to for handling a Bot Framework connector client

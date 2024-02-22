@@ -11,7 +11,6 @@ using TeamsCallingBot.Cache;
 using TeamsCallingBot.Helpers;
 using TeamsCallingBot.Domain.Models;
 using TeamsCallingBot.Application.DTOs;
-using TeamsCallingBot.Services.MicrosoftGraph;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
@@ -22,6 +21,9 @@ using Microsoft.Graph;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MeetingInfo = Microsoft.Graph.MeetingInfo;
+using TeamsCallingBot.Shared.Constants.MicrosoftGraph;
+using TeamsCallingBot.Application.Interfaces.MicrosoftGraph;
+using TeamsCallingBot.Shared.Interfaces.MicrosoftGraph;
 
 namespace TeamsCallingBot.Bots
 {

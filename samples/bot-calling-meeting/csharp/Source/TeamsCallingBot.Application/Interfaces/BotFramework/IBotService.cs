@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace TeamsCallingBot.Services.BotFramework
+namespace TeamsCallingBot.Application.Interfaces.BotFramework
 {
     /// <summary>
     /// Service for calling Bot Framework

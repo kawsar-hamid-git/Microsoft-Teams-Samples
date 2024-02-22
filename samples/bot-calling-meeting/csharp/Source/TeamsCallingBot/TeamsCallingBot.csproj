@@ -13,18 +13,22 @@
     <Compile Remove="Models\**" />
     <Compile Remove="Options\**" />
     <Compile Remove="Resources\**" />
+    <Compile Remove="Services\**" />
     <Content Remove="Extensions\**" />
     <Content Remove="Models\**" />
     <Content Remove="Options\**" />
     <Content Remove="Resources\**" />
+    <Content Remove="Services\**" />
     <EmbeddedResource Remove="Extensions\**" />
     <EmbeddedResource Remove="Models\**" />
     <EmbeddedResource Remove="Options\**" />
     <EmbeddedResource Remove="Resources\**" />
+    <EmbeddedResource Remove="Services\**" />
     <None Remove="Extensions\**" />
     <None Remove="Models\**" />
     <None Remove="Options\**" />
     <None Remove="Resources\**" />
+    <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +51,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TeamsCallingBot.Application\TeamsCallingBot.Application.csproj" />
     <ProjectReference Include="..\TeamsCallingBot.Domain\TeamsCallingBot.Domain.csproj" />
+    <ProjectReference Include="..\TeamsCallingBot.Infrastructure\TeamsCallingBot.Infrastructure.csproj" />
     <ProjectReference Include="..\TeamsCallingBot.Shared\TeamsCallingBot.Shared.csproj" />
   </ItemGroup>
 
