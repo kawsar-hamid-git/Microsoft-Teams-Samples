@@ -116,7 +116,10 @@ namespace TeamsCallingBot.Bots
 
         private async Task NotificationProcessor_OnNotificationReceivedAsync(NotificationEventArgs args)
         {
+            string tenant = args.TenantId;
+
             graphLogger.CorrelationId = args.ScenarioId;
+
             var callId = GetCallIdFromNotification(args);
 
             if (args.ResourceData is Call call)
@@ -125,6 +128,7 @@ namespace TeamsCallingBot.Bots
                 if (args.ChangeType == ChangeType.Created && call.State == CallState.Incoming)
                 {
                     await callService.Answer(
+                        tenant,
                         callId,
                         new List<MediaInfo>
                         {
@@ -143,12 +147,12 @@ namespace TeamsCallingBot.Bots
                     if (!callCache.GetIsEstablished(callId))
                     {
                         callCache.SetIsEstablished(callId);
-                        await callService.Record(callId, audioRecordingConstants.PleaseRecordYourMessage);
+                        await callService.Record(tenant, callId, audioRecordingConstants.PleaseRecordYourMessage);
                     }
 
                     if (incidentCache.TryGetValue(callId, out IncidentDetails incidentDetails))
                     {
-                        await callService.InviteParticipant(callId, incidentDetails.Participants.Select(p => new IdentitySet { User = p }));
+                        await callService.InviteParticipant(tenant, callId, incidentDetails.Participants.Select(p => new IdentitySet { User = p }));
                     }
                 }
             }
@@ -166,7 +170,8 @@ namespace TeamsCallingBot.Bots
                 // Here we are transcribing the recording and sending it as a message in the call chat.
                 try
                 {
-                    var callDetails = callService.Get(callId);
+                    var callDetails = callService.Get(tenant, callId);
+
                     var threadId = (await callDetails)?.ChatInfo?.ThreadId;
 
                     // Calls initiated in a 1:1 chat with the bot do not have a threadId
@@ -194,6 +199,7 @@ namespace TeamsCallingBot.Bots
                 }
 
                 await callService.PlayPrompt(
+                    tenant,
                     callId,
                     new List<MediaInfo>
                     {
@@ -257,6 +263,7 @@ namespace TeamsCallingBot.Bots
                             if (textToSpeechRecordingLocation != null)
                             {
                                 await callService.PlayPrompt(
+                                    tenant,
                                     callId,
                                     new List<MediaInfo>
                                     {
@@ -270,7 +277,7 @@ namespace TeamsCallingBot.Bots
                         else
                         {
                             // Play the record prompt only when the first user joins the call
-                            await callService.Record(callId, audioRecordingConstants.PleaseRecordYourMessage);
+                            await callService.Record(tenant, callId, audioRecordingConstants.PleaseRecordYourMessage);
                         }
                     }
 
@@ -279,7 +286,7 @@ namespace TeamsCallingBot.Bots
                         participants[0]?.Info?.Identity?.Application?.Id == botOptions.AppId &&
                         atLeastOneUserJoined)
                     {
-                        await callService.HangUp(callId);
+                        await callService.HangUp(callId, tenant);
                         return;
                     }
                 }

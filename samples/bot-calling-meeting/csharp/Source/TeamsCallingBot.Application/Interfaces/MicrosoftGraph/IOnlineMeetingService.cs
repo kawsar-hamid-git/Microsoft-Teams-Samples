@@ -13,13 +13,13 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="subject">Subject of the meeting to create</param>
         /// <param name="participantsIds">Array of AAD Ids for participants</param>
         /// <returns></returns>
-        Task<OnlineMeeting> Create(string subject, IEnumerable<string> participantsIds);
+        Task<OnlineMeeting> Create(string tenant, string subject, IEnumerable<string> participantsIds);
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="meetingId"></param>
         /// <returns></returns>
-        Task<OnlineMeeting> Get(string subject);
+        Task<OnlineMeeting> Get(string subject, string tenant);
     }
 }

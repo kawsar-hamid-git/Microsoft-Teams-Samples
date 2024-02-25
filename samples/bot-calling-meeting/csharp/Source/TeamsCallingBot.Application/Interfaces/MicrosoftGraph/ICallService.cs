@@ -1,6 +1,3 @@
-
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Graph;
 
 namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
@@ -13,14 +10,14 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="id">The ID of the call to answer</param>
         /// <param name="preFetchMedia">Media that Teams will prefetch.</param>
         /// <returns>Task</returns>
-        Task Answer(string id, IEnumerable<MediaInfo>? preFetchMedia);
+        Task Answer(string tenant, string id, IEnumerable<MediaInfo>? preFetchMedia);
 
         /// <summary>
         /// Create a new call
         /// </summary>
         /// <param name="users">Users to add to the call</param>
         /// <returns>The calls details</returns>
-        Task<Call> Create(IEnumerable<Identity> users);
+        Task<Call> Create(string tenant, IEnumerable<Identity> users);
 
         /// <summary>
         /// Create a new call
@@ -28,21 +25,21 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="chatInfo">Chat info of the call</param>
         /// <param name="meetingInfo">Meeting info</param>
         /// <returns>The calls details</returns>
-        Task<Call> Create(ChatInfo chatInfo, MeetingInfo meetingInfo);
+        Task<Call> Create(string tenant, ChatInfo chatInfo, MeetingInfo meetingInfo);
 
         /// <summary>
         /// Get a calls details
         /// </summary>
         /// <param name="id">The ID of the call</param>
         /// <returns>The calls details</returns>
-        Task<Call> Get(string id);
+        Task<Call> Get(string tenant, string id);
 
         /// <summary>
         /// Delete/Hang up a call
         /// </summary>
         /// <param name="id">The ID of the call</param>
         /// <returns>Task</returns>
-        Task HangUp(string id);
+        Task HangUp(string id, string tenant);
 
         /// <summary>
         /// Invite participants to a call
@@ -50,7 +47,7 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="id">The ID of the call</param>
         /// <param name="participants">The participants to invite</param>
         /// <returns>Task</returns>
-        Task InviteParticipant(string id, IEnumerable<IdentitySet> participants);
+        Task InviteParticipant(string tenant, string id, IEnumerable<IdentitySet> participants);
 
         /// <summary>
         /// Plays a media prompt in a call
@@ -58,7 +55,7 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="id">The ID of the call where you want to play the prompt</param>
         /// <param name="mediaPrompts">The Media to play</param>
         /// <returns>The Play Prompt Operation</returns>
-        Task<PlayPromptOperation> PlayPrompt(string id, IEnumerable<MediaInfo> mediaPrompts);
+        Task<PlayPromptOperation> PlayPrompt(string tenant, string id, IEnumerable<MediaInfo> mediaPrompts);
 
         /// <summary>
         /// Play the provided prompt in a call, and then record what is said.
@@ -69,6 +66,7 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="stopTones">Stop tones to stop the recording</param>
         /// <returns>The record operation with access token to and file location of the recording</returns>
         Task<RecordOperation> Record(
+            string tenant,
             string id,
             MediaInfo mediaPrompt,
             int maxRecordDurationInSeconds = 10,
@@ -79,7 +77,7 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// </summary>
         /// <param name="id">The ID of the call to reject</param>
         /// <returns></returns>
-        Task<Call> Reject(string id);
+        Task<Call> Reject(string tenant, string id);
 
         /// <summary>
         /// Redirect a call that has not been answered yet
@@ -95,6 +93,6 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// <param name="transferIdentity"></param>
         /// <param name="transfereeIdentity"></param>
         /// <returns></returns>
-        Task Transfer(string id, Identity transferIdentity, Identity? transfereeIdentity = null);
+        Task Transfer(string tenant, string id, Identity transferIdentity, Identity? transfereeIdentity = null);
     }
 }

@@ -16,6 +16,6 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         /// You need to upload your app to either your org or Teams app store to test this API
         /// </param>
         /// <returns></returns>
-        Task<TeamsAppInstallation> InstallApp(string chatId, string teamsCatalogAppId);
+        Task<TeamsAppInstallation> InstallApp(string tenant, string chatId, string teamsCatalogAppId);
     }
 }

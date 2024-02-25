@@ -139,14 +139,15 @@ namespace TeamsCallingBot.Bots
                 var peoplePickerAadIds = peoplePicker.Split(',');
                 var action = moduleSubmitData?.Action?.ToLowerInvariant();
                 var callId = moduleSubmitData?.CallId;
+                var tenant = turnContext.Activity.ChannelData.tenant.id;
 
                 try
                 {
                     switch (action)
                     {
                         case "create":
-                            
-                            var call = await callService.Create(users: peoplePickerAadIds.Select(p => new Identity { Id = p }));
+
+                            var call = await callService.Create(tenant: tenant, users: peoplePickerAadIds.Select(p => new Identity { Id = p }));
 
                             if (call != null)
                             {
@@ -155,30 +156,37 @@ namespace TeamsCallingBot.Bots
                                 return await CreateTaskModuleMessageResponse("Working on that, you can close this dialog now.");
                             }
                             break;
+
                         case "transfer":
+
                             return await CallService.HandleTeamsCallNotBeingFound(
+
                                 callId,
-                                (nonNullCallId) => callService.Transfer(
-                                        nonNullCallId,
-                                        new Identity { Id = peoplePicker }),
+
+                                (nonNullCallId) => callService.Transfer(tenant, nonNullCallId, new Identity { Id = peoplePicker }),
+
                                 CreateTaskModuleMessageResponse);
+
                         case "invite":
+
                             return await CallService.HandleTeamsCallNotBeingFound(
-                                        callId,
-                                (nonNullCallId) => callService.InviteParticipant(
-                                        nonNullCallId,
-                                        new[] { new IdentitySet { User = new Identity { Id = peoplePicker } } }),
+
+                                callId,
+
+                                (nonNullCallId) =>
+                                    callService.InviteParticipant(tenant, nonNullCallId, new[] { new IdentitySet { User = new Identity { Id = peoplePicker } } }),
+
                                 CreateTaskModuleMessageResponse);
+
                         case "createincident":
+
                             if (moduleSubmitData?.IncidentName != null)
                             {
-                                return await CreateIncidentCall(
-                                    turnContext,
-                                    moduleSubmitData.IncidentName,
-                                    peoplePickerAadIds,
-                                    cancellationToken);
+                                return await CreateIncidentCall(turnContext, tenant, moduleSubmitData.IncidentName, peoplePickerAadIds, cancellationToken);
                             }
+
                             break;
+
                         default:
                             break;
                     }
@@ -195,21 +203,28 @@ namespace TeamsCallingBot.Bots
 
         private async Task SendResponse(ITurnContext<IMessageActivity> turnContext, string input, string? callId, CancellationToken cancellationToken)
         {
+            var tenant = turnContext.Activity.ChannelData.tenant.id;
+
             switch (input)
             {
                 case "playrecordprompt":
+
                     await CallService.HandleTeamsCallNotBeingFound(
                         callId,
-                        (nonNullCallId) => callService.Record(nonNullCallId, audioRecordingConstants.PleaseRecordYourMessage),
+                        (nonNullCallId) => callService.Record(tenant, nonNullCallId, audioRecordingConstants.PleaseRecordYourMessage),
                         (message) => UpdateActivityAsync(message, turnContext, cancellationToken));
                     break;
+
                 case "hangup":
+
                     await CallService.HandleTeamsCallNotBeingFound(
                         callId,
-                        (nonNullCallId) => callService.HangUp(nonNullCallId),
+                        (nonNullCallId) => callService.HangUp(nonNullCallId, tenant),
                         (message) => UpdateActivityAsync(message, turnContext, cancellationToken));
                     break;
+
                 case "joinscheduledmeeting":
+
                     if (turnContext.Activity.ChannelData["meeting"] != null)
                     {
                         var call = await JoinScheduledMeeting(turnContext, cancellationToken);
@@ -237,9 +252,13 @@ namespace TeamsCallingBot.Bots
             var organiser = await GetMeetingOrganiser(turnContext, cancellationToken);
 
             var channelDataTenant = JObject.Parse(JsonConvert.SerializeObject(turnContext.Activity.ChannelData)).SelectToken("tenant");
-            organiser.SetTenantId(channelDataTenant["id"].ToString());
+
+            var tenant = channelDataTenant!["id"]!.ToString();
+
+            organiser.SetTenantId(tenant);
 
             return await callService.Create(
+                tenant, 
                 new ChatInfo
                 {
                     ThreadId = turnContext.Activity.Conversation.Id,
@@ -276,19 +295,19 @@ namespace TeamsCallingBot.Bots
             return null;
         }
 
-        private async Task<TaskModuleResponse> CreateIncidentCall(ITurnContext turnContext, string incidentSubject, string[] peoplePickerAadIds, CancellationToken cancellationToken)
+        private async Task<TaskModuleResponse> CreateIncidentCall(ITurnContext turnContext, string tenant, string incidentSubject, string[] peoplePickerAadIds, CancellationToken cancellationToken)
         {
-            var onlineMeeting = await onlineMeetingService.Create(incidentSubject, peoplePickerAadIds);
+            var onlineMeeting = await onlineMeetingService.Create(tenant, incidentSubject, peoplePickerAadIds);
 
             if (onlineMeeting != null)
             {
                 MeetingInfo meetingInfo = JoinInfo.ParseMeetingInfo(onlineMeeting.JoinWebUrl);
 
-                var meetingCall = await callService.Create(onlineMeeting.ChatInfo, meetingInfo);
+                var meetingCall = await callService.Create(tenant, onlineMeeting.ChatInfo, meetingInfo);
 
                 if (meetingCall != null)
                 {
-                    await chatService.InstallApp(meetingCall.ChatInfo.ThreadId, botOptions.CatalogAppId);
+                    await chatService.InstallApp(tenant, meetingCall.ChatInfo.ThreadId, botOptions.CatalogAppId);
 
                     var incidentDetails = new IncidentDetails
                     {

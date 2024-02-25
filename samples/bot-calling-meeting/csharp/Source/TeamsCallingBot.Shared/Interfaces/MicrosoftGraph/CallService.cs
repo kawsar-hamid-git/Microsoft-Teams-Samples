@@ -30,8 +30,10 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task Answer(string id, IEnumerable<MediaInfo>? preFetchMedia)
+        public Task Answer(string tenant, string id, IEnumerable<MediaInfo>? preFetchMedia)
         {
+            GraphServiceClient graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .Answer(
                     callbackUri: callbackUri,
@@ -45,13 +47,13 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task<Call> Create(IEnumerable<Identity> users)
+        public Task<Call> Create(string tenant, IEnumerable<Identity> users)
         {
             var call = new Call
             {
                 Direction = CallDirection.Outgoing,
                 CallbackUri = callbackUri,
-                TenantId = "05d397eb-3d7d-4e37-8761-88e52b14890e",//azureAdOptions.TenantId,
+                TenantId = tenant,
                 Targets = users.Select(user => new InvitationParticipantInfo
                 {
                     Identity = new IdentitySet
@@ -68,7 +70,7 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
                 }
             };
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
 
             return graphServiceClient.Communications.Calls
                 .Request()
@@ -76,14 +78,14 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task<Call> Create(ChatInfo chatInfo, MeetingInfo meetingInfo)
+        public Task<Call> Create(string tenant, ChatInfo chatInfo, MeetingInfo meetingInfo)
         {
             var call = new Call
             {
                 Direction = CallDirection.Outgoing,
                 CallbackUri = callbackUri,
                 ChatInfo = chatInfo,
-                TenantId = azureAdOptions.TenantId,
+                TenantId = tenant,
                 MeetingInfo = meetingInfo,
                 RequestedModalities = new List<Modality>()
                 {
@@ -94,7 +96,7 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
                 }
             };
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
 
             return graphServiceClient.Communications.Calls
                 .Request()
@@ -102,25 +104,27 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task<Call> Get(string id)
+        public Task<Call> Get(string tenant, string id)
         {
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            GraphServiceClient graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .Request()
                 .GetAsync();
         }
 
         /// <inheritdoc/>
-        public Task HangUp(string id)
+        public Task HangUp(string id, string tenant)
         {
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .Request()
                 .DeleteAsync();
         }
 
         /// <inheritdoc/>
-        public Task InviteParticipant(string id, IEnumerable<IdentitySet> participants)
+        public Task InviteParticipant(string tenant, string id, IEnumerable<IdentitySet> participants)
         {
             var invitationParticipants = participants.Select(participant =>
                 new InvitationParticipantInfo
@@ -128,7 +132,8 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
                     Identity = participant
                 });
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id].Participants
                 .Invite(invitationParticipants, id)
                 .Request()
@@ -136,19 +141,21 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc />
-        public Task<PlayPromptOperation> PlayPrompt(string id, IEnumerable<MediaInfo> mediaPrompts)
+        public Task<PlayPromptOperation> PlayPrompt(string tenant, string id, IEnumerable<MediaInfo> mediaPrompts)
         {
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
-            return graphServiceClient.Communications.Calls[id]
-                .PlayPrompt(
-                    CreatePromptsFromMediaInfos(mediaPrompts),
-                    clientContext: id)
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
+            return graphServiceClient
+                .Communications
+                .Calls[id]
+                .PlayPrompt(CreatePromptsFromMediaInfos(mediaPrompts), clientContext: id)
                 .Request()
                 .PostAsync();
         }
 
         /// <inheritdoc/>
         public Task<RecordOperation> Record(
+            string tenant,
             string id,
             MediaInfo mediaPrompt,
             int maxRecordDurationInSeconds = 10,
@@ -156,15 +163,13 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         {
             if (stopTones == null)
             {
-                stopTones = new List<string>()
-            {
-                "#",
-                "1",
-                "*"
-            };
+                stopTones = new List<string>() { "#", "1", "*" };
             }
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+
+
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .RecordResponse(
                     CreatePromptsFromMediaInfos(new List<MediaInfo>() { mediaPrompt }),
@@ -187,9 +192,10 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task Reject(string id, RejectReason rejectReason)
+        public Task Reject(string tenant, string id, RejectReason rejectReason)
         {
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            GraphServiceClient graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .Reject(rejectReason, null)
                 .Request()
@@ -197,13 +203,13 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task<Call> Reject(string id)
+        public Task<Call> Reject(string tenant, string id)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public Task Transfer(string id, Identity transferIdentity, Identity? transfereeIdentity = null)
+        public Task Transfer(string tenant, string id, Identity transferIdentity, Identity? transfereeIdentity = null)
         {
             var transferTarget = new InvitationParticipantInfo
             {
@@ -217,14 +223,18 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
             }
             };
 
+
+
             ParticipantInfo? transferee = null;
+
             if (transfereeIdentity != null)
             {
                 if (transfereeIdentity.AdditionalData == null)
                 {
                     transfereeIdentity.AdditionalData = new Dictionary<string, object>();
                 }
-                transfereeIdentity.AdditionalData["tenantId"] = azureAdOptions.TenantId;
+
+                transfereeIdentity.AdditionalData["tenantId"] = tenant;
 
                 transferee = new ParticipantInfo
                 {
@@ -235,7 +245,10 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
                 };
             }
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, "05d397eb-3d7d-4e37-8761-88e52b14890e");
+
+
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             return graphServiceClient.Communications.Calls[id]
                 .Transfer(transferTarget, transferee)
                 .Request()

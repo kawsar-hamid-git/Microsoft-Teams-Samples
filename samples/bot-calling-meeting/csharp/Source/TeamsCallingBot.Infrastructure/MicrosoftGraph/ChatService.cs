@@ -1,23 +1,30 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.ExternalConnectors;
+using TeamsCallingBot.Application.DTOs;
 using TeamsCallingBot.Application.Interfaces.MicrosoftGraph;
+using TeamsCallingBot.Shared.Extension.MicrosoftGraph;
 
 namespace TeamsCallingBot.Infrastructure.MicrosoftGraph
 {
     public class ChatService : IChatService
     {
         private readonly GraphServiceClient graphServiceClient;
+        private readonly AzureAdOptions azureAdOptions;
 
-        public ChatService(GraphServiceClient graphServiceClient)
+        public ChatService(
+            GraphServiceClient graphServiceClient,
+            IOptions<AzureAdOptions> azureADOptions)
         {
             this.graphServiceClient = graphServiceClient;
+            this.azureAdOptions = azureADOptions.Value;
         }
 
         /// <inheritdoc/>
-        public Task<TeamsAppInstallation> InstallApp(string chatId, string teamsCatalogAppId)
+        public Task<TeamsAppInstallation> InstallApp(string tenant, string chatId, string teamsCatalogAppId)
         {
             var teamsAppInstallation = new TeamsAppInstallation
             {
@@ -27,9 +34,11 @@ namespace TeamsCallingBot.Infrastructure.MicrosoftGraph
                 }
             };
 
-            return graphServiceClient.Chats[chatId].InstalledApps
-                .Request()
-                .AddAsync(teamsAppInstallation);
+
+            var graphServiceClient = MicrosoftGraphServiceClientExtensions
+                .GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
+            return graphServiceClient.Chats[chatId].InstalledApps.Request().AddAsync(teamsAppInstallation);
         }
     }
 }

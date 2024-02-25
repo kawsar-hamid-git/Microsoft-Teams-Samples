@@ -16,15 +16,20 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
     {
         private readonly GraphServiceClient graphServiceClient;
         private readonly UsersOptions usersOptions;
+        private readonly AzureAdOptions azureAdOptions;
 
-        public OnlineMeetingService(GraphServiceClient graphServiceClient, IOptions<UsersOptions> usersOptions)
+        public OnlineMeetingService(
+            GraphServiceClient graphServiceClient,
+            IOptions<AzureAdOptions> azureADOptions, 
+            IOptions<UsersOptions> usersOptions)
         {
             this.graphServiceClient = graphServiceClient;
             this.usersOptions = usersOptions.Value;
+            this.azureAdOptions = azureADOptions.Value;
         }
 
         /// <inheritdoc/>
-        public Task<OnlineMeeting> Create(string subject, IEnumerable<string> participantsIds)
+        public Task<OnlineMeeting> Create(string tenant, string subject, IEnumerable<string> participantsIds)
         {
             var onlineMeeting = new OnlineMeeting
             {
@@ -47,7 +52,8 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
                 }
             };
 
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient("bf2ca226-a144-4f9f-a539-957bbbfcc441", "sQN8Q~H75wt9Ur36nB-gN1kyTCqa3pGz2M9SUawA", "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
             // To call this API the user (UserIdWithAssignedOnlineMeetingPolicy) must have been granted an application access policy
             // https://learn.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy
             return graphServiceClient.Users[usersOptions.UserIdWithAssignedOnlineMeetingPolicy].OnlineMeetings
@@ -56,9 +62,9 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
         }
 
         /// <inheritdoc/>
-        public Task<OnlineMeeting> Get(string meetingId)
+        public Task<OnlineMeeting> Get(string meetingId, string tenant)
         {
-            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient("bf2ca226-a144-4f9f-a539-957bbbfcc441", "sQN8Q~H75wt9Ur36nB-gN1kyTCqa3pGz2M9SUawA", "05d397eb-3d7d-4e37-8761-88e52b14890e");
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
 
             return graphServiceClient.Users[usersOptions.UserIdWithAssignedOnlineMeetingPolicy].OnlineMeetings[meetingId]
                 .Request()
