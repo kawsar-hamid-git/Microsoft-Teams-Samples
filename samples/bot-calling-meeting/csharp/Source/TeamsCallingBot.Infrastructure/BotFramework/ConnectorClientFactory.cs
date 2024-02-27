@@ -1,12 +1,9 @@
-
-using System;
 using System.Collections.Concurrent;
-using System.Net.Http;
-using TeamsCallingBot.Application.DTOs;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TeamsCallingBot.Application.DTOs;
 using TeamsCallingBot.Application.Interfaces.BotFramework;
 
 namespace TeamsCallingBot.Infrastructure.BotFramework

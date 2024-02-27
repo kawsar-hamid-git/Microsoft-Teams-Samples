@@ -7,42 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\CreateIncidentCard.json" />
-    <None Remove="Resources\IncidentMeetingActionsCard.json" />
-    <None Remove="Resources\MeetingActions.json" />
-    <None Remove="Resources\PeoplePicker.json" />
-    <None Remove="Resources\WelcomeCard.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\CreateIncidentCard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Resources\IncidentMeetingActionsCard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Resources\MeetingActions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Resources\PeoplePicker.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Resources\WelcomeCard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Common\" />
     <Folder Include="Features\" />
   </ItemGroup>

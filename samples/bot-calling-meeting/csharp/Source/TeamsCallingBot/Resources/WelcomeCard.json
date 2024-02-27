@@ -11,7 +11,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "Sample Calling Bot",
+      "text": "Teams Calling Bot",
       "wrap": true
     }
   ],
@@ -22,6 +22,17 @@
       "id": "createcall",
       "data": {
         "action": "createcall",
+        "msteams": {
+          "type": "task/fetch"
+        }
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Create PSTN Call",
+      "id": "createpstncall",
+      "data": {
+        "action": "createpstncall",
         "msteams": {
           "type": "task/fetch"
         }

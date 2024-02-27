@@ -4,14 +4,14 @@
   "type": "AdaptiveCard",
   "body": [
     {
-      "type": "Input.ChoiceSet",
-      "label": "${choiceLabel}",
-      "choices.data": {
-        "type": "Data.Query",
-        "dataset": "graph.microsoft.com/users"
-      },
-      "id": "peoplePicker",
-      "isMultiSelect": "${isMultiSelect}"
+      "type": "TextBlock",
+      "text": "${inputLabel}"
+    },
+    {
+      "type": "Input.Text",
+      "id": "pstnNumberInputId",
+      "placeholder": "enter pstn number",
+      "maxLength": 100
     }
   ],
   "actions": [

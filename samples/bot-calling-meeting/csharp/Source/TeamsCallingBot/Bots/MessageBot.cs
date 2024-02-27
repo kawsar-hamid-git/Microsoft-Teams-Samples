@@ -1,5 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
 using System.Linq;
@@ -99,21 +97,31 @@ namespace TeamsCallingBot.Bots
                     taskInfo.Card = adaptiveCardFactory.CreatePeoplePickerCard("Choose who to create a call with:", "Create", callId: null, isMultiSelect: true);
                     taskInfo.Title = "Create call";
                     break;
+
+                // Opens a module with a form where users can input the PSTN number. Later that number will be used to create a call
+                case "createpstncall":
+                    taskInfo.Card = adaptiveCardFactory.CreatePSTNFormCard("Type the number whom to create the call with:", "Create", callId: null);
+                    taskInfo.Title = "Create pstn call";
+                    break;
+
                 // Opens a module with a people picker where a user can be selected to transfer the current call to
                 case "transfercall":
                     taskInfo.Card = adaptiveCardFactory.CreatePeoplePickerCard("Choose who to transfer the call to:", "Transfer", fetchData?.CallId);
                     taskInfo.Title = "Transfer call";
                     break;
+
                 // Opens a module with a people picker where a user can be selected to invite a participant to the current call
                 case "inviteparticipant":
                     taskInfo.Card = adaptiveCardFactory.CreatePeoplePickerCard("Choose who to invite to the call:", "Invite", fetchData?.CallId);
                     taskInfo.Title = "Select the user to invite";
                     break;
+
                 // Opens a modules with a form to create an incident. This includes a incident title, and those who should be on the call.
                 case "openincidenttask":
                     taskInfo.Card = adaptiveCardFactory.CreateIncidentCard();
                     taskInfo.Title = "Create incident";
                     break;
+
                 default:
                     break;
             }
@@ -258,7 +266,7 @@ namespace TeamsCallingBot.Bots
             organiser.SetTenantId(tenant);
 
             return await callService.Create(
-                tenant, 
+                tenant,
                 new ChatInfo
                 {
                     ThreadId = turnContext.Activity.Conversation.Id,

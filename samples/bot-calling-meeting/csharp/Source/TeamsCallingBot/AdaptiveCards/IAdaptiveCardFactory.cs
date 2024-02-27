@@ -47,5 +47,14 @@ namespace TeamsCallingBot.AdaptiveCards
         /// <param name="isMultiSelect">Is multiple users able to be selected</param>
         /// <returns>Card with people picker for choosing users</returns>
         Attachment CreatePeoplePickerCard(string choiceLabel, string action, string? callId, bool isMultiSelect = false);
+
+        /// <summary>
+        /// Create a card for inputting the PSTN number
+        /// </summary>
+        /// <param name="inputLabel"></param>
+        /// <param name="action"></param>
+        /// <param name="callId"></param>
+        /// <returns></returns>
+        Attachment CreatePSTNFormCard(string inputLabel, string action, string? callId);
     }
 }

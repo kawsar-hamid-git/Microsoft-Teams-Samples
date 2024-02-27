@@ -74,6 +74,21 @@ namespace TeamsCallingBot.AdaptiveCards
 
         }
 
+
+        public Attachment CreatePSTNFormCard(string inputLabel, string action, string? callId)
+        {
+            var template = GetCardTemplate("PSTNNumberInputForm.json");
+
+            var serializedJson = template.Expand(new
+            {
+                inputLabel,
+                action,
+                callId = callId ?? string.Empty
+            });
+
+            return CreateAttachment(serializedJson);
+        }
+
         private AdaptiveCardTemplate GetCardTemplate(string fileName)
         {
             string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", fileName);
