@@ -100,7 +100,7 @@ namespace TeamsCallingBot.Bots
 
                 // Opens a module with a form where users can input the PSTN number. Later that number will be used to create a call
                 case "createpstncall":
-                    taskInfo.Card = adaptiveCardFactory.CreatePSTNFormCard("Type the number whom to create the call with:", "Create", callId: null);
+                    taskInfo.Card = adaptiveCardFactory.CreatePSTNFormCard("Type the number whom to create the1 call with:", "Create", callId: null);
                     taskInfo.Title = "Create pstn call";
                     break;
 
