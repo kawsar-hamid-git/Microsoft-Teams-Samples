@@ -100,7 +100,7 @@ namespace TeamsCallingBot.Bots
 
                 // Opens a module with a form where users can input the PSTN number. Later that number will be used to create a call
                 case "createpstncall":
-                    taskInfo.Card = adaptiveCardFactory.CreatePSTNFormCard("Type the number whom to create the1 call with:", "Create", callId: null);
+                    taskInfo.Card = adaptiveCardFactory.CreatePSTNFormCard("Type the number whom to create the1 call with:", "CreatePSTN", callId: null);
                     taskInfo.Title = "Create pstn call";
                     break;
 
@@ -141,13 +141,18 @@ namespace TeamsCallingBot.Bots
             var moduleSubmitData = asJobject.ToObject<TaskModuleSubmitData>();
             var peoplePicker = moduleSubmitData?.PeoplePicker;
 
+
+            var action = moduleSubmitData?.Action?.ToLowerInvariant();
+            var callId = moduleSubmitData?.CallId;
+            var tenant = turnContext.Activity.ChannelData.tenant.id;
+            var pstnNumber = "+8801758749280";
+            var botId = botOptions.AppId;
+            var botDisplayName = "TeamsCallingBOT";
+
             if (peoplePicker != null)
             {
                 // Adaptive Card people picker returns a comma separated list of aad IDs
                 var peoplePickerAadIds = peoplePicker.Split(',');
-                var action = moduleSubmitData?.Action?.ToLowerInvariant();
-                var callId = moduleSubmitData?.CallId;
-                var tenant = turnContext.Activity.ChannelData.tenant.id;
 
                 try
                 {
@@ -203,6 +208,18 @@ namespace TeamsCallingBot.Bots
                 {
                     logger.LogError(ex, "Failure while making Graph Call");
                     return await CreateTaskModuleMessageResponse($"Something went wrong 😖. {ex.Message}");
+                }
+            }
+
+            else if (action!.Equals("createpstn"))
+            {
+                var pstnCall = await callService.Create(Convert.ToString(tenant), pstnNumber, botId, botDisplayName);
+
+                if (pstnCall != null)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Attachment(adaptiveCardFactory.CreateMeetingActionsCard(pstnCall.Id)));
+
+                    return await CreateTaskModuleMessageResponse("Working on that, you can close this dialog now.");
                 }
             }
 

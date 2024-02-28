@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using TeamsCallingBot.Application.Interfaces.MicrosoftGraph;
 using TeamsCallingBot.Shared.Extension.MicrosoftGraph;
+using Microsoft.Graph.Communications.Common.Transport;
+using Microsoft.Graph.Communications.Calls;
 
 namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
 {
@@ -101,6 +103,67 @@ namespace TeamsCallingBot.Shared.Interfaces.MicrosoftGraph
             return graphServiceClient.Communications.Calls
                 .Request()
                 .AddAsync(call);
+        }
+
+        /// <inheritdoc/>
+        public Task<Call> Create(string tenant, string pstnNumber, string botId, string botDisplayName)
+        {
+            var call = new Call
+            {
+                CallbackUri = callbackUri,
+                TenantId = tenant,
+                Source = new ParticipantInfo
+                {
+                    Identity = new IdentitySet
+                    {
+                        AdditionalData = new Dictionary<string, object>
+                        {
+                            {
+                                "applicationInstance" , new Identity
+                                {
+                                    DisplayName = botDisplayName,
+                                    Id = botId,
+                                }
+                            },
+                        },
+                    },
+                    CountryCode = null,
+                    EndpointType = null,
+                    Region = null,
+                    LanguageId = null,
+                },
+
+                Targets = new List<InvitationParticipantInfo>
+                {
+                    new InvitationParticipantInfo
+                    {
+                        Identity = new IdentitySet
+                        {
+                            AdditionalData = new Dictionary<string, object>
+                            {
+                                {
+                                    "phone" , new Identity
+                                    {
+                                        Id = pstnNumber,
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+
+                RequestedModalities = new List<Modality>()
+                {
+                    Modality.Audio
+                },
+                MediaConfig = new ServiceHostedMediaConfig
+                {
+                }
+            };
+
+            var graphServiceClient = MicrosoftGraphExtensions.GetMicrosoftGraphServiceClient(azureAdOptions.ClientId!, azureAdOptions.ClientSecret!, tenant);
+
+            return graphServiceClient.Communications.Calls.Request().AddAsync(call);
         }
 
         /// <inheritdoc/>

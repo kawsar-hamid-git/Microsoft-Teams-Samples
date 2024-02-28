@@ -28,6 +28,16 @@ namespace TeamsCallingBot.Application.Interfaces.MicrosoftGraph
         Task<Call> Create(string tenant, ChatInfo chatInfo, MeetingInfo meetingInfo);
 
         /// <summary>
+        /// Creates a new pstn call
+        /// </summary>
+        /// <param name="tenant"></param>
+        /// <param name="pstnNumber"></param>
+        /// <param name="botId"></param>
+        /// <param name="botDisplayName"></param>
+        /// <returns></returns>
+        Task<Call> Create(string tenant, string pstnNumber, string botId, string botDisplayName);
+
+        /// <summary>
         /// Get a calls details
         /// </summary>
         /// <param name="id">The ID of the call</param>
